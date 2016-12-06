@@ -5,18 +5,19 @@ Take Advantage of Multi Accelerators Multi Operations
 
 # about
 We have a dream that freedom world for Heterogeneous computing.
-* NOW : FPGA
+* NOW : Mulit FPGA
 * On Distributed platform : Multi Accelerators Multi Operations 
 * Future : GPU,CPU,DSP etc... 
 
 # 玉藻の前
 ### tamamoのイラストを募集しています。
+かわいいのだとうれしい。
 
 ## tamamoについて
-tamamoはInterconnected-FPGAを使いこなすことをキッカケに作られた、マルチFPGA分散処理フレームワークです。
+tamamoは、複数のInterconnected-FPGAを使うことをキッカケに作られた、マルチFPGA分散処理フレームワークです。
 
-このInterconnected-FPGAには、インターフェースや機能が多くつながります。
-そのため9つのしっぽを持つ美しい九尾をモチーフに、このプロジェクトの名前を付けました。
+このInterconnected-FPGAには、SASやDMAバス高速な光通信等々の、豊富なインターフェースや機能がつながります。
+9つのしっぽを持つ美しい九尾をこれになぞらえ、九尾・玉藻の前である、"tamamo"をこのプロジェクトの名前に付けました。
 
 現在、高速な光ネットワーク・高速なフラッシュストレージ・高速な共有メモリ/レジスタが密結合したInterconnected-FPGAをマルチノードに展開することを実現しました。
 長期的な展望として、FPGAだけにとどまらず、CPU・GPU処理も制御し、マルチアクセラレータ環境での多様な計算処理を実現します。
@@ -43,7 +44,7 @@ https://www.avaldata.co.jp/products/z3_gigachannel/apx7142/apx7142.html
 6. $ cd sample_project 
 7. $ make 
 
-You Enjoy Multi FPGA Boards for Data Center or Big data Analytics!
+Enjoy your Multi FPGA Boards for Data Center or Big data Analytics!
 
 
 # award and article
