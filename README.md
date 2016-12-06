@@ -32,7 +32,7 @@ https://www.avaldata.co.jp/products/z3_gigachannel/apx7142/apx7142.html
 ## 環境について
 現在はAPX-7142を使い、16ノード環境でマルチFPGAでのデータベース処理や、マルチノードCPU演算に使っています。
 
-![image](https://cloud.githubusercontent.com/assets/8033826/20907815/f6a89f84-bb93-11e6-857d-29496a3efbe7.png)
+![image](https://cloud.githubusercontent.com/assets/8033826/20908126/e4457f9a-bb95-11e6-87ad-3e226ce5768d.png)
 
 # How to use 
 1. $ git clone 
