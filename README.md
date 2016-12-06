@@ -5,13 +5,13 @@ Take Advantage of Multi Accelerators Multi Operations
 
 # about
 We have a dream that freedom world for Heterogeneous computing.
-* NOW : Mulit FPGA
-* On Distributed platform : Multi Accelerators Multi Operations 
-* Future : GPU,CPU,DSP etc... 
+* NOW : multiple FPGAs
+* on Distributed platform : Multi Accelerators Multi Operations 
+* future Work: CPU, GPU, DSP etc... 
 
 # 玉藻の前
 ### tamamoのイラストを募集しています。
-かわいいのだとうれしい。
+そのうちかわいいのがついたら嬉しいなって。
 
 ## tamamoについて
 tamamoは、複数のInterconnected-FPGAを使うことをキッカケに作られた、マルチFPGA分散処理フレームワークです。
@@ -22,7 +22,7 @@ tamamoは、複数のInterconnected-FPGAを使うことをキッカケに作ら�
 現在、高速な光ネットワーク・高速なフラッシュストレージ・高速な共有メモリ/レジスタが密結合したInterconnected-FPGAをマルチノードに展開することを実現しました。
 長期的な展望として、FPGAだけにとどまらず、CPU・GPU処理も制御し、マルチアクセラレータ環境での多様な計算処理を実現します。
 
-# 1st Target Multi FPGA(APX-7142) Cluster
+# 1st Target Multiple FPGAs(APX-7142) Cluster
 ![image](https://cloud.githubusercontent.com/assets/8033826/20906699/cac04086-bb8c-11e6-9805-ddbe6e5e1b36.png)
 
 16-node APX-7142 on Skylake i7Cluster
@@ -31,7 +31,9 @@ tamamoは、複数のInterconnected-FPGAを使うことをキッカケに作ら�
 https://www.avaldata.co.jp/products/z3_gigachannel/apx7142/apx7142.html
 
 ## 環境について
-現在はAPX-7142を使い、16ノード環境でマルチFPGAでのデータベース処理や、マルチノードCPU演算に使っています。
+開発はAPX-7142の16ノード環境です。
+
+マルチFPGAでのデータベース処理や、マルチノードCPU演算に使っています。
 
 ![image](https://cloud.githubusercontent.com/assets/8033826/20908126/e4457f9a-bb95-11e6-87ad-3e226ce5768d.png)
 
@@ -63,3 +65,4 @@ Enjoy your Multi FPGA Boards for Data Center or Big data Analytics!
 https://github.com/open-mpi/ompi
 
 http://dl.acm.org/citation.cfm?id=2159433
+
