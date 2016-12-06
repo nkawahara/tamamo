@@ -10,15 +10,15 @@ We have a dream that freedom world for Heterogeneous computing.
 * Future : GPU,CPU,DSP etc... 
 
 # 玉藻の前
-## tamamoのイラストを募集しています。
+### tamamoのイラストを募集しています。
 
 ## tamamoについて
 tamamoはInterconnected-FPGAを使いこなすことをキッカケに作られた、マルチFPGA分散処理フレームワークです。
-現在、高速な光ネットワーク・高速なフラッシュストレージ・高速な共有メモリ/レジスタが密結合したInterconnected-FPGAをマルチノードに展開することを実現しました。
 
 このInterconnected-FPGAには、インターフェースや機能が多くつながります。
 そのため9つのしっぽを持つ美しい九尾をモチーフに、このプロジェクトの名前を付けました。
 
+現在、高速な光ネットワーク・高速なフラッシュストレージ・高速な共有メモリ/レジスタが密結合したInterconnected-FPGAをマルチノードに展開することを実現しました。
 長期的な展望として、FPGAだけにとどまらず、CPU・GPU処理も制御し、マルチアクセラレータ環境での多様な計算処理を実現します。
 
 # 1st Target Multi FPGA(APX-7142) Cluster
@@ -30,7 +30,7 @@ tamamoはInterconnected-FPGAを使いこなすことをキッカケに作られ�
 https://www.avaldata.co.jp/products/z3_gigachannel/apx7142/apx7142.html
 
 ## 環境について
-現在はAPX-7142を使い、16ノード環境でFPGAとCPUを計算処理に使っています。
+現在はAPX-7142を使い、16ノード環境でマルチFPGAでのデータベース処理や、マルチノードCPU演算に使っています。
 
 ![image](https://cloud.githubusercontent.com/assets/8033826/20907815/f6a89f84-bb93-11e6-857d-29496a3efbe7.png)
 
