@@ -56,4 +56,4 @@ flymake-mode
 /test/tmp/
 /tmp/
 
-
+/src/lib/*
