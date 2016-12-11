@@ -1,3 +1,6 @@
+#emacs 
+*.*~
+
 # Compiled Object files
 *.slo
 *.lo
