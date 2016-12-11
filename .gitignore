@@ -57,3 +57,4 @@ flymake-mode
 /tmp/
 
 /src/lib/*
+!.gitkeep
