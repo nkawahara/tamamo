@@ -4,6 +4,8 @@
 #include <Poco/Net/TCPServer.h>
 #include <Poco/Net/StreamSocket.h>
 
+#include "tmmapx-swhj.hpp"
+
 #define DEBUG
 #define TIME_BENCH
 
@@ -28,8 +30,11 @@ int main(){
     std::cout << "Waiting for connection";
 
     ss -> receiveBytes( &buffer_ope, sizeof(buffer_ope)-1 );    
-    fprintf(stderr, "%d %s",buffer_ope.number, buffer_ope.name);    
-    }
+    fprintf(stderr, "%d %s\n",buffer_ope.number, buffer_ope.name);
+
+    ss->close();
+    //serv->close();        
+  }
 }
   
   
