@@ -7,19 +7,13 @@
 #define DEBUG
 #define TIME_BENCH
 
-typedef struct {
-  int number;
-  char name[20];
-} test_opeItem;
-
-
 int main(){
   int port = 33039;
   std::string host = "localhost";
   
-  test_opeItem daemonOpe;
-  daemonOpe.number = 3939;
-  strcpy(daemonOpe.name, "tamamo");
+  joinOpeItem daemonOpe;
+  daemonOpe.dsize = 4096*8;
+  daemonOpe.wsize = 4096;
 
   while (true) {
     try {
@@ -32,11 +26,11 @@ int main(){
       try {
 
         while (true) {
-          int ret = ss -> sendBytes(&daemonOpe, sizeof(test_opeItem)-1);
+          int ret = ss -> sendBytes(&daemonOpe, sizeof(joinOpeItem)-1);
           if (ret < 0){
             throw std::exception();
           }
-          daemonOpe.number++;
+          daemonOpe.dsize ++;
         }
       }
       catch (...) {
