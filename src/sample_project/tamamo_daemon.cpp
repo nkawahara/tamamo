@@ -3,8 +3,10 @@
 #include <Poco/Net/Socket.h>
 #include <Poco/Net/TCPServer.h>
 #include <Poco/Net/StreamSocket.h>
+#include <Poco/Exception.h>
 
 #include "tmmapx-swhj.hpp"
+#include "tmmapx-net.hpp"
 
 #define DEBUG
 #define TIME_BENCH
@@ -17,18 +19,81 @@ int main(){
   serv -> listen();
   
   joinOpeItem buffer_ope;
-
+  
   for(;;){
     ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
     ss -> setNoDelay(true);
-    std::cout << "Waiting for connection";
-
-    ss -> receiveBytes( &buffer_ope, sizeof(joinOpeItem)-1 );    
-    fprintf(stderr, "dsize(%d) wsize(%d)\n",buffer_ope.dsize, buffer_ope.wsize);
-
+    tmm_recv(ss, &buffer_ope, sizeof(joinOpeItem));
     ss->close();
-    //serv->close();        
-  }
+    tmm_joinOpePrint(&buffer_ope);
+    
+    //データを1つ受信する
+    UINT32 *Rk_buffer, *Sk_buffer;
+    Rk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
+    Sk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
+
+
+    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
+    ss -> setNoDelay(true);
+    ss -> setBlocking(true);
+    tmm_recv(ss, Rk_buffer, buffer_ope.dsize);
+    ss->close();
+    
+    /*
+    for(int j=0; j<4096; j++){
+      fprintf(stderr,"%X ",Rk_buffer[j * 8 + 4 + 3]);
+      fprintf(stderr,"%X ",Rk_buffer[j * 8 + 4 + 2]);
+    } 
+    */
+    
+    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
+    ss -> setNoDelay(true);
+    ss -> setBlocking(true);
+    tmm_recv(ss, Sk_buffer, buffer_ope.dsize);
+    ss->close();
+
+    //swhj
+    tamamo_swhj(&buffer_ope, Rk_buffer, Sk_buffer, 1);
+
+    //return result
+    //send_ope(33039, "192.168.137.1", &buffer_ope);
+    /*
+    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
+    ss -> setNoDelay(true);
+    ss -> setBlocking(true);
+    tmm_recv(ss, &buffer_ope, sizeof(joinOpeItem));
+    ss->close();
+    */
+
+
+ 
+    /*
+    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
+    ss -> setNoDelay(true);
+    ss -> setBlocking(true);
+    //std::cout << "Waiting for connection";    
+    ss -> receiveBytes( Sk_buffer, buffer_ope.dsize );    
+    ss->close();
+
+    sleep(1);
+    for(int j=0; j<4096; j++){
+      fprintf(stderr,"%X ",Rk_buffer[j * 8 + 4 + 3]);
+      fprintf(stderr,"%X ",Rk_buffer[j * 8 + 4 + 2]);
+    }  
+        
+    //swhj
+    //tamamo_swhj(&buffer_ope, Rk_buffer, Sk_buffer, 1);
+
+    //結果を返す
+    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
+    ss -> setNoDelay(true);
+    ss -> setBlocking(true);
+    //std::cout << "Waiting for connection";    
+    ss -> receiveBytes( &buffer_ope, sizeof(joinOpeItem));    
+    ss->close();
+    */
+
+    }
 }
   
   
