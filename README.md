@@ -3,6 +3,9 @@
 
 Take Advantage of Multi Accelerators Multi Operations
 
+# new 
+2017/01/04 On 10G-NIC cluster multi node swhj without APX-7142
+
 # about
 We have a dream that freedom world for Heterogeneous computing.
 * NOW : multiple FPGAs
