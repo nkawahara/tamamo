@@ -155,6 +155,7 @@ void tamamo_swhj(joinOpeItem* joi, UINT32 *Rk_buffer, UINT32 *Sk_buffer, int n_t
     Sk[j * 2 + 1] = Sk_buffer[j * 8 + 4 + 2];
   }
 
+  fprintf(stderr,"[tamamo DEBUG] swhj\n");
   ts = get_dtime();
 
   func_join(Rk, Sk, rnum, result, WSIZE, TSIZE, n_threads);
@@ -164,8 +165,7 @@ void tamamo_swhj(joinOpeItem* joi, UINT32 *Rk_buffer, UINT32 *Sk_buffer, int n_t
 
   fprintf(stderr,"[tamamo DEBUG] Local swhj Time %6.5f [sec]\n", joi->comp_time);
   fprintf(stderr,"[tamamo DEBUG] Throughput %6.5f [Mt/s]\n\n\n",
-          (float) joi->dsize/16.0 / joi->comp_time / 1000000.0);
-
+          ((float)TSIZE * 2.0 * 2.0) / joi->comp_time / 1000000.0);
 
 }
 

@@ -1,4 +1,6 @@
 #include <iostream>
+#include<omp.h>
+
 
 #include <Poco/Net/Socket.h>
 #include <Poco/Net/TCPServer.h>
@@ -19,41 +21,49 @@ void daemon_loop(int n_threads){
   serv -> listen();
   
   joinOpeItem buffer_ope;
+
+  UINT32 *Rk_buffer, *Sk_buffer;
   
   for(;;){
     ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
     ss -> setNoDelay(true);
+    ss -> setBlocking(true);
     tmm_recv(ss, &buffer_ope, sizeof(joinOpeItem));
     ss->close();
     tmm_joinOpePrint(&buffer_ope);
+
+    if( buffer_ope.dsize > 0){ 
+      //データを2つ受信する
+      Rk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
+      Sk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
+      
+      ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
+      ss -> setNoDelay(true);
+      tmm_recv(ss, Rk_buffer, buffer_ope.dsize);
+      ss->close();
+      ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
+      ss -> setNoDelay(true);
+      tmm_recv(ss, Sk_buffer, buffer_ope.dsize);
+      ss->close();
+
+
+      ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
+      ss -> setNoDelay(true);
+      ss -> setBlocking(true);      
+      //swhj
+      tamamo_swhj(&buffer_ope, Rk_buffer, Sk_buffer, n_threads);
+      //return result 
+      ss -> sendBytes(&buffer_ope, sizeof(joinOpeItem));
+      ss->close();
+      free(Rk_buffer);
+      free(Sk_buffer);
+      
+    }  
+    else{
+      return;
+    }
     
-    //データを1つ受信する
-    UINT32 *Rk_buffer, *Sk_buffer;
-    Rk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
-    Sk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
-
-
-    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
-    ss -> setNoDelay(true);
-    tmm_recv(ss, Rk_buffer, buffer_ope.dsize);
-    ss->close();
-    
-    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
-    ss -> setNoDelay(true);
-    tmm_recv(ss, Sk_buffer, buffer_ope.dsize);
-    ss->close();
-
-    //swhj
-    tamamo_swhj(&buffer_ope, Rk_buffer, Sk_buffer, n_threads);
-
-    //return result 
-    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
-    ss -> setNoDelay(true);
-    ss -> setBlocking(true);
-    //tmm_recv(ss, &buffer_ope, sizeof(joinOpeItem));
-    ss -> sendBytes(&buffer_ope, sizeof(joinOpeItem));
-    ss->close();
-  }  
+  }
 
 }
 
