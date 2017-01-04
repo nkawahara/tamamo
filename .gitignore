@@ -58,3 +58,5 @@ flymake-mode
 
 /src/lib/*
 !.gitkeep
+
+/src/poco-*

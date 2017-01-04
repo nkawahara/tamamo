@@ -17,7 +17,7 @@ typedef struct _joinOpeItem{
 
 void tmm_joinOpePrint(joinOpeItem*temp){
   fprintf(stderr,
-          "%d addr(%x %x %x) size(%d %d) %d %f\n",
+          "[tamamo DEBUG]%d addr(%x %x %x) size(%d %d) %d %f\n",
           temp -> nBoardIndex,
           temp -> addrRd,
           temp -> addrSd,
@@ -145,16 +145,6 @@ void tamamo_swhj(joinOpeItem* joi, UINT32 *Rk_buffer, UINT32 *Sk_buffer, int n_t
   for(int i=0; i<n_threads; i++){
     result[i] = (unsigned int*)malloc(sizeof(unsigned int) * 4 * 8);
   }
-  /*
-  for(int j=4090; j<WSIZE; j++){
-    fprintf(stderr,"%X\n",Rk_buffer[j * 8 + 4 + 3]);
-    fprintf(stderr,"%X\n",Rk_buffer[j * 8 + 4 + 2]);
-  }  
-  for(int j=4090; j<WSIZE; j++){
-    fprintf(stderr,"%X\n",Sk_buffer[j * 8 + 4 + 3]);
-    fprintf(stderr,"%X\n",Sk_buffer[j * 8 + 4 + 2]);
-  }
-  */
 
   for(int j=0; j<WSIZE; j++){
     Rk[j * 2 + 0] = Rk_buffer[j * 8 + 4 + 3];
@@ -172,8 +162,8 @@ void tamamo_swhj(joinOpeItem* joi, UINT32 *Rk_buffer, UINT32 *Sk_buffer, int n_t
   te = get_dtime();
   joi->comp_time = te - ts;
 
-  fprintf(stderr,"Total Time %6.5f [sec]\n", joi->comp_time);
-  fprintf(stderr,"Throughput %6.5f [Mt/s]\n\n\n",
+  fprintf(stderr,"[tamamo DEBUG] Local swhj Time %6.5f [sec]\n", joi->comp_time);
+  fprintf(stderr,"[tamamo DEBUG] Throughput %6.5f [Mt/s]\n\n\n",
           (float) joi->dsize/16.0 / joi->comp_time / 1000000.0);
 
 

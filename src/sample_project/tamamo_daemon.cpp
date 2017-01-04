@@ -38,13 +38,6 @@ void daemon_loop(int n_threads){
     tmm_recv(ss, Rk_buffer, buffer_ope.dsize);
     ss->close();
     
-    /*
-    for(int j=0; j<4096; j++){
-      fprintf(stderr,"%X ",Rk_buffer[j * 8 + 4 + 3]);
-      fprintf(stderr,"%X ",Rk_buffer[j * 8 + 4 + 2]);
-    } 
-    */
-    
     ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
     ss -> setNoDelay(true);
     tmm_recv(ss, Sk_buffer, buffer_ope.dsize);
@@ -53,9 +46,7 @@ void daemon_loop(int n_threads){
     //swhj
     tamamo_swhj(&buffer_ope, Rk_buffer, Sk_buffer, n_threads);
 
-    //return result
-    //send_ope(33040, "192.168.137.1", &buffer_ope);
-    
+    //return result 
     ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
     ss -> setNoDelay(true);
     ss -> setBlocking(true);
@@ -72,35 +63,7 @@ int main(int argc, char** argv){
     exit(1);
   }
 
-  daemon_loop(atoi(argv[1]));
-  
-    /*
-    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
-    ss -> setNoDelay(true);
-    ss -> setBlocking(true);
-    //std::cout << "Waiting for connection";    
-    ss -> receiveBytes( Sk_buffer, buffer_ope.dsize );    
-    ss->close();
-
-    sleep(1);
-    for(int j=0; j<4096; j++){
-      fprintf(stderr,"%X ",Rk_buffer[j * 8 + 4 + 3]);
-      fprintf(stderr,"%X ",Rk_buffer[j * 8 + 4 + 2]);
-    }  
-        
-    //swhj
-    //tamamo_swhj(&buffer_ope, Rk_buffer, Sk_buffer, 1);
-
-    //結果を返す
-    ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
-    ss -> setNoDelay(true);
-    ss -> setBlocking(true);
-    //std::cout << "Waiting for connection";    
-    ss -> receiveBytes( &buffer_ope, sizeof(joinOpeItem));    
-    ss->close();
-    */
-
-  //  }
+  daemon_loop(atoi(argv[1]));  
 }
   
   

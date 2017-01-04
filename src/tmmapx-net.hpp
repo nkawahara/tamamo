@@ -8,7 +8,7 @@ void tmm_recv(Poco::Net::StreamSocket *ss, void *data, int dsize){
   int usedSpace = 0;
   int freeSpace = dsize;
 
-  std::cout << "Waiting for connection" << std::endl;
+  std::cerr << "[tamamo DEBUG]Waiting for connection" << std::endl;
   while (continue_flag){
     void* bufferPtr = data + usedSpace;
     int bytesRecv = ss -> receiveBytes(bufferPtr, freeSpace);
@@ -35,7 +35,6 @@ void tmm_send(int port, std::string host, void *data, int dsize){
       auto address = Poco::Net::SocketAddress(host, port);
       ss = new Poco::Net::StreamSocket(address.family());
       ss->setNoDelay(true);
-      //ss->setBlocking(true);
       ss->connect(address);
 
       try {
@@ -55,7 +54,7 @@ void tmm_send(int port, std::string host, void *data, int dsize){
     }
     catch (...) {
       sleep(1);
-      std::cout << "Waiting for server to startup\n";
+      std::cerr << "[tamamo DEBUG]Waiting for server to startup\n";
     }
   }
 }
@@ -68,7 +67,6 @@ void send_ope(int port, std::string host,joinOpeItem *daemonOpe){
       auto address = Poco::Net::SocketAddress(host, port);
       ss = new Poco::Net::StreamSocket(address.family());
       ss->setNoDelay(true);
-      //ss->setBlocking(true);
       ss->connect(address);
 
       try {
@@ -88,7 +86,7 @@ void send_ope(int port, std::string host,joinOpeItem *daemonOpe){
     }
     catch (...) {
       sleep(1);
-      std::cout << "Waiting for server to startup\n";
+      std::cerr << "[tamamo DEBUG]Waiting for server to startup\n";
     }
   }
 }
@@ -123,7 +121,7 @@ void tmm_pullOpe(int port, std::string host, joinOpeItem *daemonOpe){
     }
     catch (...) {
       sleep(1);
-      std::cout << "Waiting for server to startup\n";
+      std::cerr << "[tamamo DEBUG]Waiting for server to startup\n";
     }
   }
 }
