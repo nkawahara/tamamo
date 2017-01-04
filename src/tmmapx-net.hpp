@@ -35,16 +35,50 @@ void tmm_send(int port, std::string host, void *data, int dsize){
       auto address = Poco::Net::SocketAddress(host, port);
       ss = new Poco::Net::StreamSocket(address.family());
       ss->setNoDelay(true);
-      ss->setBlocking(true);
+      //ss->setBlocking(true);
       ss->connect(address);
 
       try {
-
+        
         while (true) {
           int ret = ss -> sendBytes(data, dsize);
           if (ret < 0){
             throw std::exception();
           }
+          ss->close();
+          return;
+        }
+      }
+      catch (...) {
+        ss->close();
+      }
+    }
+    catch (...) {
+      sleep(1);
+      std::cout << "Waiting for server to startup\n";
+    }
+  }
+}
+
+
+void send_ope(int port, std::string host,joinOpeItem *daemonOpe){
+  while (true) {
+    try {
+      Poco::Net::StreamSocket *ss;
+      auto address = Poco::Net::SocketAddress(host, port);
+      ss = new Poco::Net::StreamSocket(address.family());
+      ss->setNoDelay(true);
+      //ss->setBlocking(true);
+      ss->connect(address);
+
+      try {
+
+        while (true) {
+          int ret = ss -> sendBytes(daemonOpe, sizeof(joinOpeItem));
+          if (ret < 0){
+            throw std::exception();
+          }
+          ss->close();
           return;
         }
       }
@@ -61,24 +95,26 @@ void tmm_send(int port, std::string host, void *data, int dsize){
 
 
 
-void send_ope(int port, std::string host,joinOpeItem *daemonOpe){
-  while (true) {
+// Connection pull from slave
+void tmm_pullOpe(int port, std::string host, joinOpeItem *daemonOpe){
+  bool continue_flag = true;
+
+  while (continue_flag) {
     try {
       Poco::Net::StreamSocket *ss;
       auto address = Poco::Net::SocketAddress(host, port);
       ss = new Poco::Net::StreamSocket(address.family());
       ss->setNoDelay(true);
-      ss->setBlocking(true);
       ss->connect(address);
-
+      
       try {
-
         while (true) {
-          int ret = ss -> sendBytes(daemonOpe, sizeof(joinOpeItem));
+          int ret = ss -> receiveBytes(daemonOpe, sizeof(joinOpeItem));
           if (ret < 0){
             throw std::exception();
           }
           return;
+          
         }
       }
       catch (...) {

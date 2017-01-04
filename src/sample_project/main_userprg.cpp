@@ -45,13 +45,6 @@ int main(int argc, char** argv){
   fread(streamR, sizeof(UINT8), dsize, fiR);
   fread(streamS, sizeof(UINT8), dsize, fiS);
   fclose(fiR); fclose(fiS);
-
-
-  //daemon local serv
-  Poco::Net::ServerSocket *serv;
-  Poco::Net::StreamSocket *ss;  
-  serv = new Poco::Net::ServerSocket(33039);
-  serv -> listen();
   
   //Inform 
   fprintf(stderr,"(INPUT Parametor) HW_core(%d) node_num(%d) tuples(%d) \n",core, node_num, tuples);
@@ -68,23 +61,15 @@ int main(int argc, char** argv){
   tmm_send(33039,"192.168.137.2", streamR, dsize);
   tmm_send(33039,"192.168.137.2", streamS, dsize);
   fprintf(stderr,"(Tamamo Message) send R S data\n");
-
-  //send_ope(33039, "192.168.137.2", &daemonOpe);
+  
   //daemon local serv
-  /*
-  ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
-  ss -> setNoDelay(true);
-  tmm_recv(ss, &daemonOpe, sizeof(joinOpeItem));
-  ss->close();
-  tmm_joinOpePrint(&daemonOpe);
-  */
+  tmm_pullOpe(33039,"192.168.137.2",&daemonOpe);
 
   te = get_dtime();
   
   fprintf(stderr,"Total Time %6.5f [sec]\n", te - ts);
   fprintf(stderr,"Throughput %6.5f [Mt/s]\n\n\n",
-          (float) dsize/16.0 / ( te - ts ) / 1000000.0);
-  
+          (float) dsize/16.0 / ( te - ts ) / 1000000.0);  
 }
   
   

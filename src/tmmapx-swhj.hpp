@@ -145,6 +145,7 @@ void tamamo_swhj(joinOpeItem* joi, UINT32 *Rk_buffer, UINT32 *Sk_buffer, int n_t
   for(int i=0; i<n_threads; i++){
     result[i] = (unsigned int*)malloc(sizeof(unsigned int) * 4 * 8);
   }
+  /*
   for(int j=4090; j<WSIZE; j++){
     fprintf(stderr,"%X\n",Rk_buffer[j * 8 + 4 + 3]);
     fprintf(stderr,"%X\n",Rk_buffer[j * 8 + 4 + 2]);
@@ -153,6 +154,7 @@ void tamamo_swhj(joinOpeItem* joi, UINT32 *Rk_buffer, UINT32 *Sk_buffer, int n_t
     fprintf(stderr,"%X\n",Sk_buffer[j * 8 + 4 + 3]);
     fprintf(stderr,"%X\n",Sk_buffer[j * 8 + 4 + 2]);
   }
+  */
 
   for(int j=0; j<WSIZE; j++){
     Rk[j * 2 + 0] = Rk_buffer[j * 8 + 4 + 3];
