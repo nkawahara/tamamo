@@ -8,7 +8,8 @@ all:$(TARGETS)
 
 tamamo:
 	$(CXX) $(CXXFLAGS) -o tmm_daemon tamamo_daemon.cpp
-	$(CXX) $(CXXFLAGS) -o main main_userprg.cpp
+	$(CXX) $(CXXFLAGS) -o main master_multinode_swhj.cpp
+#	$(CXX) $(CXXFLAGS) -o main main_userprg.cpp
 
 clean:
 	rm tmm_daemon main
