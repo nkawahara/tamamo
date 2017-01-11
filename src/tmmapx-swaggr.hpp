@@ -31,7 +31,8 @@ typedef struct aggropeItem{
   UINT8 nb_gruop; // for GroupBy
 }aggropeItem;
   
-
+//********************************
+// クラスaggrGroupBy用ライブラリ
 typedef enum {MAX, MIN, COUNT} TYPE;
 
 typedef struct _Tuple{
@@ -51,7 +52,7 @@ typedef struct _GroupUnit
   int gkey;
   GroupVal* gval;
 }GroupUnit;
-
+//*********************************
 
 //
 // software aggregation クラス
@@ -287,9 +288,11 @@ int main(int argc, char** argv){
   
   aggrGroupby gb;
   gb.init();
+
   gettimeofday(&begin, NULL);
-  gb.gu_makeGroup();
-  gb.execGroupBy();
+  gb.gu_makeGroup(); // 1 
+  gb.execGroupBy(); // 2
+
   gettimeofday(&end, NULL);
   gb.printResult();
   gb.gu_finalize();

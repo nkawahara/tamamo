@@ -8,6 +8,7 @@
 
 #include "tmmapx-swhj.hpp"
 #include "tmmapx-net.hpp"
+#include "tmmapx-swaggr.hpp"
 
 #define DEBUG
 #define TIME_BENCH
@@ -20,27 +21,30 @@ void daemon_loop(int n_threads){
   serv = new Poco::Net::ServerSocket(33039);
   serv -> listen();
   
-  aggrOpeItem buffer_ope;
-  //aggrOpeItem TupleList;
+  aggropeItem buffer_ope;
 
-  UINT32 *Sk_buffer;//, *Rk_buffer;
+  Tuple *TupleList;
   
   for(;;){
     ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
     ss -> setNoDelay(true);
     ss -> setBlocking(true);
-    tmm_recv(ss, &buffer_ope, sizeof(aggrOpeItem));
+    tmm_recv(ss, &buffer_ope, sizeof(aggropeItem));
     ss->close();
-    tmm_aggrOpePrint(&daemonOpe);
+    //tmm_aggrOpePrint(&buffer_ope);
 
     if( buffer_ope.dsize > 0){ 
       //データを2つ受信する
       //Rk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
-      Sk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
+
+      //箱作る
+      TupleList = (Tuple *)malloc(buffer_ope.dsize);
       
       ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
       ss -> setNoDelay(true);
-      tmm_recv(ss, Sk_buffer, buffer_ope.dsize);
+
+      //データサイズ分受信
+      tmm_recv(ss, TupleList, buffer_ope.dsize);
       ss->close();
       /*ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
       ss -> setNoDelay(true);
@@ -51,13 +55,14 @@ void daemon_loop(int n_threads){
       ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
       ss -> setNoDelay(true);
       ss -> setBlocking(true);      
-      //swhj
-      tamamo_aggr(&buffer_ope, Sk_buffer, n_threads);
+      //swaggr
+      //tamamo_aggr(&buffer_ope, Sk_buffer, n_threads);
+      fprintf(stderr, "ここでAggregation処理を実行\n");
       //return result 
-      ss -> sendBytes(&buffer_ope, sizeof(aggrOpeItem));
+      ss -> sendBytes(&buffer_ope, sizeof(aggropeItem));
       ss->close();
       //free(Rk_buffer);
-      free(Sk_buffer);
+      free(TupleList);
       
     }  
     else{

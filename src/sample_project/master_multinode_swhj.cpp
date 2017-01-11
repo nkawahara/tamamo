@@ -1,5 +1,7 @@
 #include <iostream>
 
+
+#include <time.h>
 #include <Poco/Net/Socket.h>
 #include <Poco/Net/StreamSocket.h>
 
@@ -11,15 +13,15 @@
 #define DEBUG
 #define TIME_BENCH
 
-void aggr_distribute(int port, std::string host, aggrOpeItem * daemonOpe,   UINT8 *streamS){
+void aggr_distribute(int port, std::string host, aggropeItem * daemonOpe, Tuple * send_data ){
   send_ope(port, host, daemonOpe);
   fprintf(stderr,"[tamamo DEBUG] send ope\n");
-  tmm_send(port, host, streamS, daemonOpe->dsize);
+  tmm_send(port, host, send_data, daemonOpe->dsize);
   //tmm_send(port, host, streamS, daemonOpe->dsize);
-  fprintf(stderr,"[tamamo DEBUG] send R S data\n");
+  fprintf(stderr,"[tamamo DEBUG] send Aggragation data\n");
 }
 
-void swhj_check_comp(int port, std::string host, aggrOpeItem * daemonOpe){
+void swhj_check_comp(int port, std::string host, aggropeItem * daemonOpe){
   tmm_pullOpe(port, host, daemonOpe);  
 }
 
@@ -82,20 +84,21 @@ int main(int argc, char** argv){
   aggrGroupby masterGroup;
   //aggrGroupby masterGroup;
   
-  masterGruop.makeTuple(); //データを読み込みしてクラスに格納
+  masterGroup.makeTuple(); //データを読み込みしてクラスに格納
   int nb_tuple = masterGroup.getNBTuple();
   int nb_group = masterGroup.getNBGroup();
   int dsize = sizeof(Tuple)*nb_tuple;
   
-  Tuple* mater_data = masterGroup.getTupleList();
+  Tuple* master_data = masterGroup.getTupleList();
   
-  aggrOpeItem daemonOpe[node_num];
+  //構造体作成及び，swaggrに必要なパラメータの格納
+  aggropeItem daemonOpe[node_num];
   daemonOpe.dsize = dsize;
   daemonOpe.nb_group = nb_group;
   
 
   std::string addr_prefix("192.168.137.");
-  ts = get_dtime();
+  usec ts = get_dtime();
   
   //ノード数が増えると、ウィンドウサイズが拡張され、１処理にnode_num*2[Stage]かかる
   for(int step = 0 ; step < node_num*2; step++){
@@ -108,7 +111,7 @@ int main(int argc, char** argv){
       aggr_check_comp(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i]);
     }
   }
-  te = get_dtime();
+  usec te = get_dtime();
 
   fprintf(stderr,"[tamamo] Total Time %6.5f [sec]\n", te - ts);
   fprintf(stderr,"Throughput %6.7lf [Mt/s]\n\n\n",
