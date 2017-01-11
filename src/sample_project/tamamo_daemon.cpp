@@ -20,42 +20,43 @@ void daemon_loop(int n_threads){
   serv = new Poco::Net::ServerSocket(33039);
   serv -> listen();
   
-  joinOpeItem buffer_ope;
+  aggrOpeItem buffer_ope;
+  //aggrOpeItem TupleList;
 
-  UINT32 *Rk_buffer, *Sk_buffer;
+  UINT32 *Sk_buffer;//, *Rk_buffer;
   
   for(;;){
     ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
     ss -> setNoDelay(true);
     ss -> setBlocking(true);
-    tmm_recv(ss, &buffer_ope, sizeof(joinOpeItem));
+    tmm_recv(ss, &buffer_ope, sizeof(aggrOpeItem));
     ss->close();
-    tmm_joinOpePrint(&buffer_ope);
+    tmm_aggrOpePrint(&daemonOpe);
 
     if( buffer_ope.dsize > 0){ 
       //データを2つ受信する
-      Rk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
+      //Rk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
       Sk_buffer = (unsigned int*)malloc(buffer_ope.dsize);
       
       ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
       ss -> setNoDelay(true);
-      tmm_recv(ss, Rk_buffer, buffer_ope.dsize);
-      ss->close();
-      ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
-      ss -> setNoDelay(true);
       tmm_recv(ss, Sk_buffer, buffer_ope.dsize);
       ss->close();
+      /*ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
+      ss -> setNoDelay(true);
+      tmm_recv(ss, Sk_buffer, buffer_ope.dsize);
+      ss->close();*/
 
 
       ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
       ss -> setNoDelay(true);
       ss -> setBlocking(true);      
       //swhj
-      tamamo_swhj(&buffer_ope, Rk_buffer, Sk_buffer, n_threads);
+      tamamo_aggr(&buffer_ope, Sk_buffer, n_threads);
       //return result 
-      ss -> sendBytes(&buffer_ope, sizeof(joinOpeItem));
+      ss -> sendBytes(&buffer_ope, sizeof(aggrOpeItem));
       ss->close();
-      free(Rk_buffer);
+      //free(Rk_buffer);
       free(Sk_buffer);
       
     }  

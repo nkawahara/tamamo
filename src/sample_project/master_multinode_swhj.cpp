@@ -9,16 +9,15 @@
 #define DEBUG
 #define TIME_BENCH
 
-
-void swhj_distribute(int port, std::string host, joinOpeItem * daemonOpe,   UINT8 *streamR, UINT8 *streamS){
+void aggr_distribute(int port, std::string host, aggrOpeItem * daemonOpe,   UINT8 *streamS){
   send_ope(port, host, daemonOpe);
   fprintf(stderr,"[tamamo DEBUG] send ope\n");
-  tmm_send(port, host, streamR, daemonOpe->dsize);
   tmm_send(port, host, streamS, daemonOpe->dsize);
+  //tmm_send(port, host, streamS, daemonOpe->dsize);
   fprintf(stderr,"[tamamo DEBUG] send R S data\n");
 }
 
-void swhj_check_comp(int port, std::string host, joinOpeItem * daemonOpe){
+void swhj_check_comp(int port, std::string host, aggrOpeItem * daemonOpe){
   tmm_pullOpe(port, host, daemonOpe);  
 }
 
@@ -29,34 +28,40 @@ int main(int argc, char** argv){
     printf("[tamamo DEBUG]%s HW_core(core) nodes(node_num) wsize(wsize on 1 node) tuples\n", argv[0]);
     exit(1);
   }
-    int core, node_num, wsize, tuples;
-  sscanf(argv[1], "%d", &core);
+
+  int /*core,*/ node_num, wsize, tuples;
+  //sscanf(argv[1], "%d", &core);
   sscanf(argv[2], "%d", &node_num);
   sscanf(argv[3], "%d", &wsize);
   sscanf(argv[4], "%d", &tuples);
   //int window_block = node_num;
-  int dsize = tuples * 32 + wsize *32;
+  int dsize = Tuple*NB_TUPLE;
+  // int dsize = tuples * 32 + wsize *32;
   
   double te, ts;
-  joinOpeItem daemonOpe[node_num];
+  aggrOpeItem daemonOpe[node_num];
   //daemonOpe.dsize = 4096*8;
   //daemonOpe.wsize = 4096;
+  daemonOpe.dsize = dsize;
   for( int i = 0; i<node_num; i++){
-    tmm_joinOpeAsgmt(&daemonOpe[i],0,0,0,0,dsize,wsize,0,0);
-    tmm_joinOpePrint(&daemonOpe[i]);
+    tmm_aggrOpeAsgmt(&daemonOpe[i],0,0,0,0,dsize,wsize,0,0);
+    tmm_aggrOpePrint(&daemonOpe[i]);
   }
+  
+  const char *fname = "./data/NASDAQ_merge.csv";
+  //const char *fnameR = "input_R.bin";
+  //const char *fnameS = "input_S.bin";
+  FILE  *fiS;
+  UINT8 *streamS;
 
-  const char *fnameR = "input_R.bin";
-  const char *fnameS = "input_S.bin";
-  FILE *fiR, *fiS;
-  UINT8 *streamR, *streamS;
-  fiR = myfopen(fnameR, "rb");
-  fiS = myfopen(fnameS, "rb");
-  streamR = (UINT8 *)malloc(sizeof(UINT8)*dsize);
+  file = myfopen(fname,"rb");
+  //fiR = myfopen(fnameR, "rb");
+  //fiS = myfopen(fnameS, "rb");
   streamS = (UINT8 *)malloc(sizeof(UINT8)*dsize);
-  fread(streamR, sizeof(UINT8), dsize, fiR);
+  //streamR = (UINT8 *)malloc(sizeof(UINT8)*dsize);
   fread(streamS, sizeof(UINT8), dsize, fiS);
-  fclose(fiR); fclose(fiS);
+  //fread(streamS, sizeof(UINT8), dsize, fiS);
+  fclose(fiS); //fclose(fiS);
   
   //Inform 
   fprintf(stderr,"[tamamo DEBUG](INPUT Parametor) HW_core(%d) node_num(%d) tuples(%d) \n",core, node_num, tuples);
@@ -77,11 +82,11 @@ int main(int argc, char** argv){
   for(int step = 0 ; step < node_num*2; step++){
     //ノンブロッキングデータ配布
     for(int i=0; i < node_num;i++){
-      swhj_distribute(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i], streamR, streamS); 
+      aggr_distribute(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i], streamS); 
     }
     
     for(int i=0; i < node_num;i++){
-      swhj_check_comp(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i]);
+      aggr_check_comp(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i]);
     }
   }
   te = get_dtime();
