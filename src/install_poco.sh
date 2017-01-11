@@ -1,4 +1,9 @@
 #/bin/bash
+f [ ! -e ~/usr/lib/libPocoUtil.so ]; then
+    echo "すでにPocoがインストールされています．インストールの必要はありません．"
+    exit
+fi
+echo "必要なソフトウェアライブラリをインストールします．"
 
 wget https://pocoproject.org/releases/poco-1.7.7/poco-1.7.7.tar.gz
 tar xvf poco-1.7.7.tar.gz
@@ -7,6 +12,8 @@ echo "IMPORTANT: Make sure that the path to the build directory does not contain
 ./configure --omit=Data/ODBC,Data/MySQL --prefix=$HOME/usr  --no-tests --no-samples
 make -j4
 make install 
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/usr/lib
-#export PATH=$PATH:$HOME/usr/bin
+echo "自分の環境変数に下記を追加してください"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/usr/lib
+export PATH=$PATH:$HOME/usr/bin
+
 #g++ -I ~/usr/include/ -L ~/usr/lib/  -l PocoFoundationd test.cpp
