@@ -4,6 +4,7 @@
 #include <Poco/Net/StreamSocket.h>
 
 #include "tmmapx-swhj.hpp"
+#include "tmmapx-swaggr.hpp"
 #include "tmmapx-net.hpp"
 
 #define DEBUG
