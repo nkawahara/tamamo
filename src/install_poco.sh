@@ -1,6 +1,11 @@
 #/bin/bash
-if [ ! -e ~/usr/lib/libPocoUtil.so ]; then
+if [ ! -e $HOME/usr/lib/libPocoUtil.so ]; then
     echo "必要なソフトウェアライブラリをインストールします．"
+
+    if [ ! -e $HOME/usr ]; then
+	mkdir $HOME/usr
+    fi
+    
     wget https://pocoproject.org/releases/poco-1.7.7/poco-1.7.7.tar.gz
     tar xvf poco-1.7.7.tar.gz
     cd poco-1.7.7
