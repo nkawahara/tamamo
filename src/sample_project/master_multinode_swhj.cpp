@@ -25,25 +25,25 @@ void swhj_check_comp(int port, std::string host, aggrOpeItem * daemonOpe){
 
 int main(int argc, char** argv){
 
+  /*
   //Data Initialize 
   if(argc != 5){
     printf("[tamamo DEBUG]%s HW_core(core) nodes(node_num) wsize(wsize on 1 node) tuples\n", argv[0]);
     exit(1);
   }
 
-  int /*core,*/ node_num, wsize, tuples;
+  int core, node_num, wsize, tuples;
   //sscanf(argv[1], "%d", &core);
   sscanf(argv[2], "%d", &node_num);
   sscanf(argv[3], "%d", &wsize);
   sscanf(argv[4], "%d", &tuples);
   //int window_block = node_num;
-  int dsize = Tuple*NB_TUPLE;
   // int dsize = tuples * 32 + wsize *32;
   
   double te, ts;
   aggrOpeItem daemonOpe[node_num];
   //daemonOpe.dsize = 4096*8;
-  //daemonOpe.wsize = 4096;
+  //daemonOpe.wsize = 4096
   daemonOpe.dsize = dsize;
   for( int i = 0; i<node_num; i++){
     tmm_aggrOpeAsgmt(&daemonOpe[i],0,0,0,0,dsize,wsize,0,0);
@@ -75,19 +75,33 @@ int main(int argc, char** argv){
   //send_ope(33039,'localhost',&daemonOpe);
   //swhj_distribute(33039, "192.168.137.2", &daemonOpe[1], streamR, streamS);    
 
-  std::string addr_prefix("192.168.137.");
+  */
+
+
 
   aggrGroupby masterGroup;
   //aggrGroupby masterGroup;
   
+  masterGruop.makeTuple(); //データを読み込みしてクラスに格納
+  int nb_tuple = masterGroup.getNBTuple();
+  int nb_group = masterGroup.getNBGroup();
+  int dsize = sizeof(Tuple)*nb_tuple;
+  
+  Tuple* mater_data = masterGroup.getTupleList();
+  
+  aggrOpeItem daemonOpe[node_num];
+  daemonOpe.dsize = dsize;
+  daemonOpe.nb_group = nb_group;
+  
 
+  std::string addr_prefix("192.168.137.");
   ts = get_dtime();
   
   //ノード数が増えると、ウィンドウサイズが拡張され、１処理にnode_num*2[Stage]かかる
   for(int step = 0 ; step < node_num*2; step++){
     //ノンブロッキングデータ配布
     for(int i=0; i < node_num;i++){
-      aggr_distribute(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i], streamS); 
+      aggr_distribute(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i], Tuple); 
     }
     
     for(int i=0; i < node_num;i++){

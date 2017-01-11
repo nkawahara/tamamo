@@ -28,7 +28,7 @@ typedef struct aggropeItem{
   UINT8 rwFlag;
   UINT8 stateFlag; //state transition
   UINT8 idc_flag;
-  UINT8 nm_gruop; // for GroupBy
+  UINT8 nb_gruop; // for GroupBy
 }aggropeItem;
   
 
@@ -54,11 +54,11 @@ typedef struct _GroupUnit
 
 
 //
-// software aggregation
+// software aggregation クラス
 // データをグループに分けて解析する
 // * 今回はグループごと最大値を取りだすプログラム．※？ほんまか？
 // 
-class aggrGroupby{
+class aggrGroupby{ 
 private:
   int NUM_THREADS = 8;
   int NB_TUPLE = 0; //(1000 * 1000 * 10); // 10 million
