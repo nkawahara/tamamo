@@ -4,6 +4,8 @@
 #include <Poco/Net/StreamSocket.h>
 
 #include "tmmapx-swhj.hpp"
+//#include "tmmapx-swaggr.hpp"
+#include "tmmapx-swaggr.hpp"
 #include "tmmapx-net.hpp"
 
 #define DEBUG
@@ -75,6 +77,9 @@ int main(int argc, char** argv){
 
   std::string addr_prefix("192.168.137.");
 
+  aggrGroupby masterGroup;
+  //aggrGroupby masterGroup;
+  
 
   ts = get_dtime();
   
