@@ -28,7 +28,7 @@ typedef struct aggropeItem{
   UINT8 rwFlag;
   UINT8 stateFlag; //state transition
   UINT8 idc_flag;
-  UINT8 nb_gruop; // for GroupBy
+  UINT8 nb_group; // for GroupBy
 }aggropeItem;
   
 //********************************
@@ -53,6 +53,22 @@ typedef struct _GroupUnit
   GroupVal* gval;
 }GroupUnit;
 //*********************************
+
+
+void tmm_aggrOpeAsgmt(aggropeItem *temp,
+		 UINT64 uvsa_addr,  UINT32 dram_addr,
+		 UINT32 dsize,  UINT8 rwFlag,  UINT8 stateFlag, UINT8 idc_flag,
+		 UINT8 nb_group){
+
+  temp->uvsa_addr = uvsa_addr;
+  temp->dram_addr = dram_addr;
+  temp->dsize = dsize;
+  temp->rwFlag = rwFlag;
+  temp->stateFlag = stateFlag;
+  temp->idc_flag = idc_flag;
+  temp->nb_group = nb_group;
+}
+
 
 //
 // software aggregation クラス

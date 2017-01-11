@@ -1,7 +1,7 @@
 #include <iostream>
 
 
-#include <time.h>
+//#include <time.h>
 #include <Poco/Net/Socket.h>
 #include <Poco/Net/StreamSocket.h>
 
@@ -14,25 +14,31 @@
 #define TIME_BENCH
 
 void aggr_distribute(int port, std::string host, aggropeItem * daemonOpe, Tuple * send_data ){
-  send_ope(port, host, daemonOpe);
+  //send_ope(port, host, daemonOpe);
+  tmm_send(port, host, send_data, sizeof(aggropeItem));
   fprintf(stderr,"[tamamo DEBUG] send ope\n");
   tmm_send(port, host, send_data, daemonOpe->dsize);
   //tmm_send(port, host, streamS, daemonOpe->dsize);
   fprintf(stderr,"[tamamo DEBUG] send Aggragation data\n");
 }
 
-void swhj_check_comp(int port, std::string host, aggropeItem * daemonOpe){
-  tmm_pullOpe(port, host, daemonOpe);  
+void aggr_check_comp(int port, std::string host, aggropeItem * daemonOpe){
+  //tmm_pullOpe(port, host, daemonOpe);  
+  tmm_pull(port, host, daemonOpe, sizeof(aggropeItem));  
 }
 
-int main(int argc, char** argv){
 
-  /*
+int main(int argc, char** argv){
   //Data Initialize 
-  if(argc != 5){
-    printf("[tamamo DEBUG]%s HW_core(core) nodes(node_num) wsize(wsize on 1 node) tuples\n", argv[0]);
+  if(argc != 2){
+    printf("[tamamo DEBUG]%s nodes(node_num) \n", argv[0]);
     exit(1);
   }
+
+  int node_num;
+  sscanf(argv[1], "%d", &node_num);
+
+  /*
 
   int core, node_num, wsize, tuples;
   //sscanf(argv[1], "%d", &core);
@@ -92,30 +98,33 @@ int main(int argc, char** argv){
   Tuple* master_data = masterGroup.getTupleList();
   
   //構造体作成及び，swaggrに必要なパラメータの格納
-  aggropeItem daemonOpe[node_num];
-  daemonOpe.dsize = dsize;
-  daemonOpe.nb_group = nb_group;
+  aggropeItem daemonOpe[node_num]; 
   
-
+  double ts,te;
+  
+  for( int i = 0; i<node_num; i++){
+    tmm_aggrOpeAsgmt(&daemonOpe[i],0,0,dsize,0,0,0,nb_group);
+  }
+  
+  
   std::string addr_prefix("192.168.137.");
-  usec ts = get_dtime();
+  ts = get_dtime();
   
-  //ノード数が増えると、ウィンドウサイズが拡張され、１処理にnode_num*2[Stage]かかる
-  for(int step = 0 ; step < node_num*2; step++){
+  for(int step = 0 ; step < node_num; step++){
     //ノンブロッキングデータ配布
     for(int i=0; i < node_num;i++){
-      aggr_distribute(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i], Tuple); 
+      aggr_distribute(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i], master_data); 
     }
     
     for(int i=0; i < node_num;i++){
       aggr_check_comp(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i]);
     }
   }
-  usec te = get_dtime();
-
+  te = get_dtime();
+  
   fprintf(stderr,"[tamamo] Total Time %6.5f [sec]\n", te - ts);
   fprintf(stderr,"Throughput %6.7lf [Mt/s]\n\n\n",
-          (((float)tuples * 2 * node_num * 2)) / (te-ts) / 1000000.0);
+          (((float)dsize * 2 * node_num * 2)) / (te-ts) / 1000000.0);
 }
   
   
