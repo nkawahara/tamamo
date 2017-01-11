@@ -1,4 +1,4 @@
-#ifdef _TMMAPX_SWAGGR_
+#ifndef _TMMAPX_SWAGGR_
 #define _TMMAPX_SWAGGR_
 
 #include <stdio.h>
@@ -29,7 +29,7 @@ typedef struct aggropeItem{
   UINT8 stateFlag; //state transition
   UINT8 idc_flag;
   UINT8 nm_gruop; // for GroupBy
-}
+}aggropeItem;
   
 
 typedef enum {MAX, MIN, COUNT} TYPE;
@@ -61,8 +61,8 @@ typedef struct _GroupUnit
 class aggrGroupby{
 private:
   int NUM_THREADS = 8;
-  int NB_TUPLE = (1000 * 1000 * 10); // 10 million
-  int NB_GROUP = 80;
+  int NB_TUPLE = 0; //(1000 * 1000 * 10); // 10 million
+  int NB_GROUP = 0; //80;
 
   Tuple* TupleList;
   GroupUnit** GULT; // Group Unit List Thread
@@ -80,12 +80,11 @@ private:
   }
     
 public:
-
   aggrGroupby(){
-
-    
+    fprintf(stderr,"start\n");
   }
   aggrGroupby(int threads){
+    fprintf(stderr,"start (threads = %d)\n",threads);
     NUM_THREADS = threads;
   }
   
@@ -98,9 +97,19 @@ public:
   int getNBGroup(){
     return NB_GROUP;
   }
-  int getTupleList(){
+  Tuple* getTupleList(){
     return TupleList;
   }
+  void setNBTuple(int temp_nb){
+    NB_TUPLE = temp_nb;
+  }
+  void setNBGroup(int temp_nb){
+    NB_GROUP = temp_nb;
+  }
+  void setTupleList(Tuple *tempTupleList){
+    TupleList = tempTupleList;
+  }
+
   
   //ローカルのファイルから読み取って
   void makeTuple(){
