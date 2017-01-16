@@ -104,7 +104,7 @@ int main(int argc, char** argv){
   double ts,te;
   
   for( int i = 0; i<node_num; i++){
-    tmm_aggrOpeAsgmt(&daemonOpe[i],0,0,dsize,0,0,0,16);
+    tmm_aggrOpeAsgmt(&daemonOpe[i],0,0,dsize,0,0,0,nb_group);
     tmm_aggrOpePrint(&daemonOpe[i]);
   }
   
