@@ -2,10 +2,10 @@
 #include <Poco/Net/TCPServer.h>
 #include <Poco/Net/StreamSocket.h>
 
-void tmm_recv(Poco::Net::StreamSocket *ss, void *data, int dsize){
+void tmm_recv(Poco::Net::StreamSocket *ss, void *data, UINT32 dsize){
   bool continue_flag = true;
-  int usedSpace = 0;
-  int freeSpace = dsize;
+  UINT32 usedSpace = 0;
+  UINT32 freeSpace = dsize;
 
   std::cerr << "[tamamo DEBUG]Waiting for connection" << std::endl;
   while (continue_flag){
@@ -25,7 +25,7 @@ void tmm_recv(Poco::Net::StreamSocket *ss, void *data, int dsize){
 }
 
 
-void tmm_send(int port, std::string host, void *data, int dsize){
+void tmm_send(int port, std::string host, void *data, UINT32 dsize){
   bool continue_flag = true;
 
   while (continue_flag) {
@@ -40,7 +40,7 @@ void tmm_send(int port, std::string host, void *data, int dsize){
       try {
         
         while (true) {
-          int ret = ss -> sendBytes(data, dsize);
+          UINT32 ret = ss -> sendBytes(data, dsize);
           if (ret < 0){
             throw std::exception();
           }
@@ -61,7 +61,7 @@ void tmm_send(int port, std::string host, void *data, int dsize){
 
 
 // Connection pull from slave
-void tmm_pull(int port, std::string host, void *data, int dsize){
+void tmm_pull(int port, std::string host, void *data, UINT32 dsize){
   bool continue_flag = true;
 
   while (continue_flag) {
@@ -75,7 +75,7 @@ void tmm_pull(int port, std::string host, void *data, int dsize){
       
       try {
         while (true) {
-          int ret = ss -> receiveBytes(data, dsize);
+          UINT32 ret = ss -> receiveBytes(data, dsize);
           if (ret < 0){
             throw std::exception();
           }
