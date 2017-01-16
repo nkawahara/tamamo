@@ -123,8 +123,10 @@ int main(int argc, char** argv){
   te = get_dtime();
   
   fprintf(stderr,"[tamamo] Total Time %6.5f [sec]\n", te - ts);
-  fprintf(stderr,"Throughput %6.7lf [Mt/s]\n\n\n",
-          (((float)dsize * 2 * node_num * 2)) / (te-ts) / 1000000.0);
+  fprintf(stderr,"Throughput %6.7lf [Mt/s]\n",
+          (((float)dsize * node_num * 2)) / (te-ts) / 1000000.0);
+  fprintf(stderr,"Throughput %6.7lf [MB/s]\n\n\n",
+          (((float)dsize * node_num)) / (te-ts) / 1048576.0);
 }
   
   
