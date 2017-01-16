@@ -70,6 +70,18 @@ void tmm_aggrOpeAsgmt(aggropeItem *temp,
 }
 
 
+void tmm_aggrOpePrint(aggropeItem*temp){
+  fprintf(stderr,
+          "[tamamo DEBUG] uvsa:%lx addr(%x) size(%d) flag:%d flag:%d IDC:%d nb_group:%d\n",
+          temp -> uvsa_addr,
+          temp -> dram_addr,
+          temp -> dsize,
+          temp -> rwFlag,
+          temp -> stateFlag,
+          temp -> idc_flag,
+          temp -> nb_group);
+}
+
 //
 // software aggregation クラス
 // データをグループに分けて解析する
@@ -77,9 +89,9 @@ void tmm_aggrOpeAsgmt(aggropeItem *temp,
 // 
 class aggrGroupby{ 
 private:
-  int NUM_THREADS = 8;
-  int NB_TUPLE = 0; //(1000 * 1000 * 10); // 10 million
-  int NB_GROUP = 0; //80;
+  UINT8 NUM_THREADS;
+  UINT32 NB_TUPLE ; //(1000 * 1000 * 10); // 10 million
+  UINT8 NB_GROUP ; //80;
 
   Tuple* TupleList;
   GroupUnit** GULT; // Group Unit List Thread
@@ -95,6 +107,44 @@ private:
     }
     return result;
   }
+
+  void makeGroup(GroupUnit* GroupUnitList){
+    int i;
+    i = 0;
+    for(map<int, int>::iterator itr=mp.begin(); itr != mp.end(); ++itr){
+      // for(int i=0;i<NB_GROUP; i++){
+      // GroupUnitList[i].gkey = i;
+      GroupUnitList[i].gkey = itr->first;
+      GroupUnitList[i].gval = (GroupVal*)malloc(sizeof(GroupVal)*3);
+      GroupUnitList[i].gval[0].type = COUNT;
+      GroupUnitList[i].gval[0].val  = 0;
+      GroupUnitList[i].gval[1].type = MAX;
+      GroupUnitList[i].gval[1].val  = 0;
+      GroupUnitList[i].gval[2].type = MIN;
+      GroupUnitList[i].gval[2].val  = DBL_MAX;
+      i++;
+    }
+  }
+
+  void finalize(GroupUnit* GroupUnitList){
+    for(int i=0;i<NB_GROUP; i++){
+      //free(GroupUnitList[i].gval);
+    }
+    //free(GroupUnitList);
+  }
+  void printResult(GroupUnit* GroupUnitList){
+    for(int j=0; j < NB_GROUP; j++){
+      cout << GroupUnitList[j].gkey;
+      for(int k=0;k<3;k++){
+	printf(" : %8.7f", GroupUnitList[j].gval[k].val);
+      }
+      cout << endl;
+    }
+  }
+  
+  
+
+
     
 public:
   aggrGroupby(){
@@ -117,14 +167,17 @@ public:
   Tuple* getTupleList(){
     return TupleList;
   }
-  void setNBTuple(int temp_nb){
+  void setNBTuple(UINT32 temp_nb){
     NB_TUPLE = temp_nb;
   }
-  void setNBGroup(int temp_nb){
+  void setNBGroup(UINT8 temp_nb){
     NB_GROUP = temp_nb;
   }
-  void setTupleList(Tuple *tempTupleList){
+  void setTupleList(Tuple * tempTupleList){
     TupleList = tempTupleList;
+  }
+  void printParam(){
+    fprintf(stderr,"tuple:%d group:%d thread:%d\n",NB_TUPLE, NB_GROUP, NUM_THREADS);
   }
 
   
@@ -162,62 +215,29 @@ public:
       TupleList[i].val3 = atoi(values[i][3].c_str());
     }
     NB_GROUP = mp.size();
+    //NB_GROUP = 16;
 
   }
 
-  
-  void makeGroup(GroupUnit* GroupUnitList){
-    int i;
-    i = 0;
-    for(map<int, int>::iterator itr=mp.begin(); itr != mp.end(); ++itr){
-      // for(int i=0;i<NB_GROUP; i++){
-      // GroupUnitList[i].gkey = i;
-      GroupUnitList[i].gkey = itr->first;
-      GroupUnitList[i].gval = (GroupVal*)malloc(sizeof(GroupVal)*3);
-      GroupUnitList[i].gval[0].type = COUNT;
-      GroupUnitList[i].gval[0].val  = 0;
-      GroupUnitList[i].gval[1].type = MAX;
-      GroupUnitList[i].gval[1].val  = 0;
-      GroupUnitList[i].gval[2].type = MIN;
-      GroupUnitList[i].gval[2].val  = DBL_MAX;
-      i++;
-    }
-  }
-  
-
-
-  void finalize(GroupUnit* GroupUnitList){
-    for(int i=0;i<NB_GROUP; i++){
-      free(GroupUnitList[i].gval);
-    }
-    free(GroupUnitList);
-  }
-
-  void gu_finalize(){
-    free(TupleList);
-    for(int i=0;i<NUM_THREADS;i++){
-      finalize(GULT[i]);
-    }
-    free(GULT);
-  }
-  
-  void printResult(GroupUnit* GroupUnitList){
-    for(int j=0; j < NB_GROUP; j++){
-      cout << GroupUnitList[j].gkey;
-      for(int k=0;k<3;k++){
-	printf(" : %8.7f", GroupUnitList[j].gval[k].val);
+  // TODO 今はこれで動くけど
+  // 将来的にはmpをtmm_sendできるようにする（して）
+  void makeMP(){
+    for(int i=0;i<NB_TUPLE;i++){
+      if(mp[TupleList[i].key] == 0){
+	mp[TupleList[i].key] = 1;
       }
-      cout << endl;
     }
   }
-  
+
   void printResult(){
     GroupUnit* GU;
     GU = (GroupUnit*)malloc(sizeof(GroupUnit)*NB_GROUP);
     makeGroup(GU);
+
+    
     for(int i=0; i<NUM_THREADS; i++){
       for(int j=0;j<NB_GROUP;j++){
-	GU[j].gval[0].val += GULT[i][j].gval[0].val; // COUNT
+	GU[j].gval[0].val += GULT[i][j].gval[0].val;
 	if(GU[j].gval[1].val < GULT[i][j].gval[1].val){
 	  GU[j].gval[1].val = GULT[i][j].gval[1].val;
 	}
@@ -230,6 +250,7 @@ public:
       }
     }
     
+    
     for(int j=0;j<NB_GROUP;j++){
       cout << GU[j].gkey;
       for(int k=0;k<3;k++){
@@ -239,6 +260,13 @@ public:
     }
     
     finalize(GU);
+  }
+
+  void gu_finalize(){
+    for(int i=0;i<NUM_THREADS;i++){
+      finalize(GULT[i]);
+    }
+    free(GULT);
   }
 
   void printTime(struct timeval begin, struct timeval end){
@@ -295,8 +323,32 @@ public:
       }
     }
   }
+
+
 };
 
+void tamamo_swGB(aggropeItem* daemonOpe, Tuple * TupleList, int n_threads){
+  struct timeval begin, end;
+
+  aggrGroupby gb(n_threads);
+  gb.printParam();
+
+  //fprintf(stderr,"%d, %d\n",daemonOpe->dsize/sizeof(Tuple), daemonOpe->nb_group);
+  gb.setNBTuple((daemonOpe->dsize)/sizeof(Tuple));
+  gb.setNBGroup(daemonOpe->nb_group);
+  gb.setTupleList(TupleList);
+  gb.printParam();
+  gb.makeMP();
+
+  gettimeofday(&begin, NULL);
+  gb.gu_makeGroup(); // 1 
+  gb.execGroupBy(); // 2
+
+  gettimeofday(&end, NULL);
+  gb.printResult();
+  gb.gu_finalize();
+  gb.printTime(begin, end);  
+}
 
 /*
 int main(int argc, char** argv){

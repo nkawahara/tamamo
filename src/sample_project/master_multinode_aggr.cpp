@@ -15,7 +15,7 @@
 
 void aggr_distribute(int port, std::string host, aggropeItem * daemonOpe, Tuple * send_data ){
   //send_ope(port, host, daemonOpe);
-  tmm_send(port, host, send_data, sizeof(aggropeItem));
+  tmm_send(port, host, daemonOpe, sizeof(aggropeItem));
   fprintf(stderr,"[tamamo DEBUG] send ope\n");
   tmm_send(port, host, send_data, daemonOpe->dsize);
   //tmm_send(port, host, streamS, daemonOpe->dsize);
@@ -91,9 +91,10 @@ int main(int argc, char** argv){
   //aggrGroupby masterGroup;
   
   masterGroup.makeTuple(); //データを読み込みしてクラスに格納
-  int nb_tuple = masterGroup.getNBTuple();
-  int nb_group = masterGroup.getNBGroup();
-  int dsize = sizeof(Tuple)*nb_tuple;
+  UINT32 nb_tuple = masterGroup.getNBTuple();
+  UINT8 nb_group = masterGroup.getNBGroup();
+  UINT32 dsize = sizeof(Tuple)*nb_tuple;
+  fprintf(stderr,"%d %d %d \n", nb_tuple, nb_group, dsize);
   
   Tuple* master_data = masterGroup.getTupleList();
   
@@ -103,29 +104,31 @@ int main(int argc, char** argv){
   double ts,te;
   
   for( int i = 0; i<node_num; i++){
-    tmm_aggrOpeAsgmt(&daemonOpe[i],0,0,dsize,0,0,0,nb_group);
+    tmm_aggrOpeAsgmt(&daemonOpe[i],0,0,dsize,0,0,0,16);
+    tmm_aggrOpePrint(&daemonOpe[i]);
   }
   
   
   std::string addr_prefix("192.168.137.");
   ts = get_dtime();
   
-  for(int step = 0 ; step < node_num; step++){
-    //ノンブロッキングデータ配布
-    for(int i=0; i < node_num;i++){
-      aggr_distribute(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i], master_data); 
-    }
-    
-    for(int i=0; i < node_num;i++){
-      aggr_check_comp(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i]);
-    }
+  //ノンブロッキングデータ配布
+  for(int i=0; i < node_num;i++){
+    aggr_distribute(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i], master_data); 
+  }
+  
+  for(int i=0; i < node_num;i++){
+    aggr_check_comp(33039, addr_prefix + std::to_string(i+1), &daemonOpe[i]);
   }
   te = get_dtime();
   
   fprintf(stderr,"[tamamo] Total Time %6.5f [sec]\n", te - ts);
   fprintf(stderr,"Throughput %6.7lf [MB/s] : %lf [KB]\n\n\n",
-          (((float)dsize * node_num)) / (te-ts) / 1000000.0,
-	  ((float)dsize)/1000.0);
+          (((float)dsize * node_num)) / (te-ts) / 1048576.0,
+	  ((float)dsize)/1024.0);
+  fprintf(stderr,"Throughput %6.7lf [Mt/s] : %lf [Kt]\n\n\n",
+          (((float)nb_tuple * node_num)) / (te-ts) / 1000000.0,
+	  ((float)nb_tuple)/1000.0);
 }
   
   

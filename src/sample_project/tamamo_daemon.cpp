@@ -31,7 +31,7 @@ void daemon_loop(int n_threads){
     ss -> setBlocking(true);
     tmm_recv(ss, &buffer_ope, sizeof(aggropeItem));
     ss->close();
-    //tmm_aggrOpePrint(&buffer_ope);
+    tmm_aggrOpePrint(&buffer_ope);
 
     if( buffer_ope.dsize > 0){ 
       //データを2つ受信する
@@ -54,16 +54,17 @@ void daemon_loop(int n_threads){
 
       ss = new Poco::Net::StreamSocket(serv -> acceptConnection());
       ss -> setNoDelay(true);
-      ss -> setBlocking(true);      
-      //swaggr
-      //tamamo_aggr(&buffer_ope, Sk_buffer, n_threads);
+      ss -> setBlocking(true);
+      
+      //sw aggr GB=GroupBy
+      tamamo_swGB(&buffer_ope, TupleList, n_threads);
       fprintf(stderr, "ここでAggregation処理を実行\n");
       //return result 
+
       ss -> sendBytes(&buffer_ope, sizeof(aggropeItem));
       ss->close();
       //free(Rk_buffer);
       free(TupleList);
-      
     }  
     else{
       return;
